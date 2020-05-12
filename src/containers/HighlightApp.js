@@ -79,15 +79,22 @@ class HighlightApp extends Component {
     }
   }
 
+  setCursor(cursorType) {
+    console.log(cursorType);
+
+    this.setState({ cursor: cursorType })
+  }
+
 
   render() {
     console.log(this.state);
-    
+
     return (
       <div className="row center-xs">
         <div className="col-xs-11 col-sm-11 col-md-11 col-lg-11">
           <h1>Simple highlight example</h1>
-          <Sketcher ranges={this.props.ranges.get('1', new List()).toJS()}
+          <Sketcher 
+            ranges={this.props.ranges.get('1', new List()).toJS()}
             enabled={true}
             style={{ textAlign: 'left' }}
             onTextHighlighted={this.onTextHighlighted.bind(this)}
@@ -137,8 +144,8 @@ class HighlightApp extends Component {
               text={'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In vitae magna lacus. Sed rhoncus tortor eget venenatis faucibus. Vivamus quis nunc vel eros volutpat auctor. Suspendisse sit amet lorem tristique lectus hendrerit aliquet. Aliquam erat volutpat. Vivamus malesuada, neque at consectetur semper, nibh urna ullamcorper metus, in dapibus arcu massa feugiat erat. Nullam hendrerit malesuada dictum. Nullam mattis orci diam, eu accumsan est maximus quis. Cras mauris nibh, bibendum in pharetra vitae, porttitor at ante. Duis pharetra elit ante, ut feugiat nibh imperdiet eget. Aenean at leo consectetur, sodales sem sit amet, consectetur massa. Ut blandit erat et turpis vestibulum euismod. Cras vitae molestie libero, vel gravida risus. Curabitur dapibus risus eu justo maximus, efficitur blandit leo porta. Donec dignissim felis ac turpis pharetra lobortis. Sed quis vehicula nulla.'}
             />
             <div>
-              {/* <button onClick= {this.setState({cursor:"PEN"})}>PEN</button>
-              <button onClick= {this.setState({cursor:"ERASER"})}>ERASER</button> */}
+              <button onClick={(e) => this.setCursor('PEN')}>PEN</button>
+              <button onClick={(e) => this.setCursor('ERASER')}>ERASER</button>
             </div>
           </div>
         </div>
