@@ -15,6 +15,7 @@ wellcome:
 	mkdir ${ROOT}/reducers
 	mkdir ${ROOT}/store
 	mkdir ${ROOT}/styles
+	mkdir ${ROOT}/asset
 	touch ${ROOT}/index.html 
 	touch ${ROOT}/index.js
 	
