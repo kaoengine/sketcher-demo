@@ -2,7 +2,6 @@ import * as appActions from '../actions/appActions';
 
 import Sketcher from 'sketcherjs';
 import RaisedButton from 'material-ui/RaisedButton';
-import ReactDOM from 'react-dom';
 import Tooltip from 'rc-tooltip';
 import React, { Component, PropTypes, Fragment } from 'react';
 import { Map, List, is, fromJS } from 'immutable';
@@ -10,17 +9,23 @@ import { connect } from 'react-redux';
 
 class HighlightApp extends Component {
   state = {
-    cursor: "PEN"
+    cursor: "PEN",
+    cursorUrl: '',
+    markerColor: '#ffcc80'
   }
 
   constructor(props) {
     super(props);
     this.nodeRender = this.nodeRender.bind(this)
     this.customRendererWithTool = this.customRendererWithTool.bind(this)
+    this.onTextHighlightedHandler = this.onTextHighlightedHandler.bind(this)
+    this.onTextHighlighted = this.onTextHighlighted.bind(this)
 
   }
 
   onTextHighlighted(range) {
+    console.log('onTextHighlighted', range);
+
     this.props.highlightRange(range);
     window.getSelection().removeAllRanges();
   }
@@ -58,6 +63,7 @@ class HighlightApp extends Component {
   }
 
   customRendererWithTool(currentRenderedNodes) {
+    console.log('currentRenderedNodes', currentRenderedNodes);
     return this.nodeRender(
       currentRenderedNodes
     )
@@ -66,11 +72,11 @@ class HighlightApp extends Component {
   renderStateCursor(cursor) {
     switch (cursor) {
       case "MOUSE":
-        return "auto";
+        return { ...this.state, cursor: 'MOUSE', cursorUrl: "auto" };
       case "PEN":
-        return "url(http://www.rw-designer.com/cursor-extern.php?id=135769), auto"
+        return { ...this.state, cursor: 'PEN', cursorUrl: "url(http://www.rw-designer.com/cursor-extern.php?id=135769), auto" }
       case "ERASER":
-        return "url(http://www.rw-designer.com/cursor-extern.php?id=72976), auto"
+        return { ...this.state, cursor: 'ERASER', cursorUrl: "url(http://www.rw-designer.com/cursor-extern.php?id=72976), auto", }
       default:
         break;
     }
@@ -78,23 +84,43 @@ class HighlightApp extends Component {
 
   setCursor(cursorType) {
     console.log('cursorType', cursorType);
-    const cursor = this.renderStateCursor(cursorType);
-    console.log('cursor', cursor);
+    const { cursorUrl, markerColor, cursor } = this.renderStateCursor(cursorType);
+    console.log('cursorUrl, markerColor, cursor', cursorUrl, markerColor, cursor);
 
-
-    this.setState({ cursor: cursor })
+    this.setState({ cursorUrl, markerColor, cursor })
   }
 
+  onTextHighlightedHandler(range) {
+    const cursorType = this.state.cursor;
+    console.log('onTextHighlightedHandler', { cursorType, range });
+
+    if (cursorType == "PEN") {
+      console.log("cursorType", 'PEN')
+      return this.onTextHighlighted(range);
+    } else if (cursorType == "ERASER") {
+      console.log("cursorType", 'ERASER')
+      return this.resetHightlight(range);
+    } else {
+      return this.onTextHighlighted(range);
+    }
+  }
 
   render() {
     console.log('RENDER()...');
-    const styleCursorWrapper = { cursor: this.state.cursor }
+    console.log('this', this.props);
+
+
+    const styleCursorWrapper = { cursor: this.state.cursorUrl }
+
+    const backgroundColor = {
+      backgroundColor: this.state.markerColor
+    }
 
     return (
       <div className="row center-xs">
         <div className="col-xs-11 col-sm-11 col-md-11 col-lg-11" style={styleCursorWrapper}>
-        <h1>Simple highlight example</h1>
-          <Sketcher 
+          <h1>Simple highlight example</h1>
+          <Sketcher
             ranges={this.props.ranges.get('1', new List()).toJS()}
             enabled={true}
             style={{ textAlign: 'left' }}
@@ -135,11 +161,9 @@ class HighlightApp extends Component {
           <Sketcher ranges={this.props.ranges.get('4', new List()).toJS()}
             enabled={true}
             style={{ textAlign: 'left' }}
-            onTextHighlighted={this.onTextHighlighted.bind(this)}
+            onTextHighlighted={this.onTextHighlightedHandler}
             id={'4'}
-            highlightStyle={{
-              backgroundColor: '#ffcc80'
-            }}
+            highlightStyle={backgroundColor}
             rangeRenderer={this.customRendererWithTool.bind(this)}
             text={'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In vitae magna lacus. Sed rhoncus tortor eget venenatis faucibus. Vivamus quis nunc vel eros volutpat auctor. Suspendisse sit amet lorem tristique lectus hendrerit aliquet. Aliquam erat volutpat. Vivamus malesuada, neque at consectetur semper, nibh urna ullamcorper metus, in dapibus arcu massa feugiat erat. Nullam hendrerit malesuada dictum. Nullam mattis orci diam, eu accumsan est maximus quis. Cras mauris nibh, bibendum in pharetra vitae, porttitor at ante. Duis pharetra elit ante, ut feugiat nibh imperdiet eget. Aenean at leo consectetur, sodales sem sit amet, consectetur massa. Ut blandit erat et turpis vestibulum euismod. Cras vitae molestie libero, vel gravida risus. Curabitur dapibus risus eu justo maximus, efficitur blandit leo porta. Donec dignissim felis ac turpis pharetra lobortis. Sed quis vehicula nulla.'}
           />
