@@ -4,7 +4,7 @@ import Sketcher from 'sketcherjs';
 import RaisedButton from 'material-ui/RaisedButton';
 import ReactDOM from 'react-dom';
 import Tooltip from 'rc-tooltip';
-import React, { Component, PropTypes } from 'react';
+import React, { Component, PropTypes, Fragment } from 'react';
 import { Map, List, is, fromJS } from 'immutable';
 import { connect } from 'react-redux';
 
@@ -63,10 +63,7 @@ class HighlightApp extends Component {
     )
   }
 
-  renderCursor() {
-    console.log('ABC', this.state);
-
-    const { cursor } = this.state;
+  renderStateCursor(cursor) {
     switch (cursor) {
       case "MOUSE":
         return "auto";
@@ -80,19 +77,23 @@ class HighlightApp extends Component {
   }
 
   setCursor(cursorType) {
-    console.log(cursorType);
+    console.log('cursorType', cursorType);
+    const cursor = this.renderStateCursor(cursorType);
+    console.log('cursor', cursor);
 
-    this.setState({ cursor: cursorType })
+
+    this.setState({ cursor: cursor })
   }
 
 
   render() {
-    console.log(this.state);
+    console.log('RENDER()...');
+    const styleCursorWrapper = { cursor: this.state.cursor }
 
     return (
       <div className="row center-xs">
-        <div className="col-xs-11 col-sm-11 col-md-11 col-lg-11">
-          <h1>Simple highlight example</h1>
+        <div className="col-xs-11 col-sm-11 col-md-11 col-lg-11" style={styleCursorWrapper}>
+        <h1>Simple highlight example</h1>
           <Sketcher 
             ranges={this.props.ranges.get('1', new List()).toJS()}
             enabled={true}
@@ -130,23 +131,21 @@ class HighlightApp extends Component {
             text={'Lorem ipsum dolor sit amet, http://www.google.fr consectetur adipiscing elit. In vitae magna lacus. Sed rhoncus tortor eget venenatis faucibus. Vivamus quis nunc vel eros volutpat auctor. Suspendisse sit amet lorem tristique lectus hendrerit aliquet. Aliquam erat volutpat. Vivamus malesuada, neque at consectetur semper, nibh urna ullamcorper metus, in dapibus arcu massa 😘 feugiat erat. Nullam hendrerit malesuada dictum. Nullam mattis orci diam, eu accumsan est maximus quis. Cras mauris nibh, bibendum in pharetra vitae, porttitor at ante. Duis pharetra elit ante, ut feugiat nibh imperdiet eget. Aenean at leo consectetur, sodales sem sit amet, consectetur massa. Ut blandit erat et turpis vestibulum euismod. Cras vitae molestie libero, vel gravida risus. Curabitur dapibus risus eu justo maximus, efficitur blandit leo porta. Donec dignissim felis ac turpis pharetra lobortis. Sed quis vehicula nulla.'}
           />
 
+          <h1>Example with tool set</h1>
+          <Sketcher ranges={this.props.ranges.get('4', new List()).toJS()}
+            enabled={true}
+            style={{ textAlign: 'left' }}
+            onTextHighlighted={this.onTextHighlighted.bind(this)}
+            id={'4'}
+            highlightStyle={{
+              backgroundColor: '#ffcc80'
+            }}
+            rangeRenderer={this.customRendererWithTool.bind(this)}
+            text={'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In vitae magna lacus. Sed rhoncus tortor eget venenatis faucibus. Vivamus quis nunc vel eros volutpat auctor. Suspendisse sit amet lorem tristique lectus hendrerit aliquet. Aliquam erat volutpat. Vivamus malesuada, neque at consectetur semper, nibh urna ullamcorper metus, in dapibus arcu massa feugiat erat. Nullam hendrerit malesuada dictum. Nullam mattis orci diam, eu accumsan est maximus quis. Cras mauris nibh, bibendum in pharetra vitae, porttitor at ante. Duis pharetra elit ante, ut feugiat nibh imperdiet eget. Aenean at leo consectetur, sodales sem sit amet, consectetur massa. Ut blandit erat et turpis vestibulum euismod. Cras vitae molestie libero, vel gravida risus. Curabitur dapibus risus eu justo maximus, efficitur blandit leo porta. Donec dignissim felis ac turpis pharetra lobortis. Sed quis vehicula nulla.'}
+          />
           <div>
-            <h1>Example with tool set</h1>
-            <Sketcher ranges={this.props.ranges.get('4', new List()).toJS()}
-              enabled={true}
-              style={{ textAlign: 'left', cursor: this.renderCursor() }}
-              onTextHighlighted={this.onTextHighlighted.bind(this)}
-              id={'4'}
-              highlightStyle={{
-                backgroundColor: '#ffcc80'
-              }}
-              rangeRenderer={this.customRendererWithTool.bind(this)}
-              text={'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In vitae magna lacus. Sed rhoncus tortor eget venenatis faucibus. Vivamus quis nunc vel eros volutpat auctor. Suspendisse sit amet lorem tristique lectus hendrerit aliquet. Aliquam erat volutpat. Vivamus malesuada, neque at consectetur semper, nibh urna ullamcorper metus, in dapibus arcu massa feugiat erat. Nullam hendrerit malesuada dictum. Nullam mattis orci diam, eu accumsan est maximus quis. Cras mauris nibh, bibendum in pharetra vitae, porttitor at ante. Duis pharetra elit ante, ut feugiat nibh imperdiet eget. Aenean at leo consectetur, sodales sem sit amet, consectetur massa. Ut blandit erat et turpis vestibulum euismod. Cras vitae molestie libero, vel gravida risus. Curabitur dapibus risus eu justo maximus, efficitur blandit leo porta. Donec dignissim felis ac turpis pharetra lobortis. Sed quis vehicula nulla.'}
-            />
-            <div>
-              <button onClick={(e) => this.setCursor('PEN')}>PEN</button>
-              <button onClick={(e) => this.setCursor('ERASER')}>ERASER</button>
-            </div>
+            <button onClick={(e) => this.setCursor('PEN')}>PEN</button>
+            <button onClick={(e) => this.setCursor('ERASER')}>ERASER</button>
           </div>
         </div>
       </div>
