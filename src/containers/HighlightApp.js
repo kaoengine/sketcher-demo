@@ -77,6 +77,8 @@ class HighlightApp extends Component {
         return { ...this.state, cursor: 'PEN', cursorUrl: "url(http://www.rw-designer.com/cursor-extern.php?id=135769), auto" }
       case "ERASER":
         return { ...this.state, cursor: 'ERASER', cursorUrl: "url(http://www.rw-designer.com/cursor-extern.php?id=72976), auto", }
+      case "ERASER_ALL":
+        return { ...this.state, cursor: 'ERASER_ALL', cursorUrl: "auto", }
       default:
         break;
     }
@@ -104,7 +106,8 @@ class HighlightApp extends Component {
       const parentRange = this.getParentRange(ranges, range);
       console.log('parentRange', parentRange);
       return this.resetHightlight(parentRange);
-    } else {
+    } 
+    else {
       return this.onTextHighlighted(range);
     }
   }
@@ -112,6 +115,15 @@ class HighlightApp extends Component {
   getParentRange(ranges, range) {
     return ranges.find(r => r.text.includes(range.text) && r.start <= range.start);
   }
+
+  clearAll(){
+    const ranges = this.props.ranges.get('4', new List()).toJS();
+    console.log("cursorType ERASER_ALL")
+    ranges.map(range=>{
+       this.resetHightlight(range);
+    })
+  }
+
 
   render() {
     console.log('RENDER()...');
@@ -129,6 +141,7 @@ class HighlightApp extends Component {
         <div className="col-xs-11 col-sm-11 col-md-11 col-lg-11" style={styleCursorWrapper}>
           <h1>Simple highlight example</h1>
           <Sketcher
+            
             ranges={this.props.ranges.get('1', new List()).toJS()}
             enabled={true}
             style={{ textAlign: 'left' }}
@@ -179,7 +192,7 @@ class HighlightApp extends Component {
           <div>
             <button onClick={(e) => this.setCursor('PEN')}>PEN</button>
             <button onClick={(e) => this.setCursor('ERASER')}>ERASER</button>
-            <button onClick={(e) => this.setCursor('ERASER_ALL')}>ERASER ALL</button>
+            <button onClick={(e) => this.clearAll()}>ERASER ALL</button>
           </div>
         </div>
       </div>
