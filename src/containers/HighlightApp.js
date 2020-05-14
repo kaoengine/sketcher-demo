@@ -98,11 +98,19 @@ class HighlightApp extends Component {
       console.log("cursorType", 'PEN')
       return this.onTextHighlighted(range);
     } else if (cursorType == "ERASER") {
-      console.log("cursorType", 'ERASER')
-      return this.resetHightlight(range);
+      console.log("cursorType ERASER", range)
+      console.log('xx', this.props.ranges.get('4', new List()).toJS());
+      const ranges = this.props.ranges.get('4', new List()).toJS();
+      const parentRange = this.getParentRange(ranges, range);
+      console.log('parentRange', parentRange);
+      return this.resetHightlight(parentRange);
     } else {
       return this.onTextHighlighted(range);
     }
+  }
+
+  getParentRange(ranges, range) {
+    return ranges.find(r => r.text.includes(range.text) && r.start <= range.start);
   }
 
   render() {
@@ -158,7 +166,8 @@ class HighlightApp extends Component {
           />
 
           <h1>Example with tool set</h1>
-          <Sketcher ranges={this.props.ranges.get('4', new List()).toJS()}
+          <Sketcher
+            ranges={this.props.ranges.get('4', new List()).toJS()}
             enabled={true}
             style={{ textAlign: 'left' }}
             onTextHighlighted={this.onTextHighlightedHandler}
@@ -170,6 +179,7 @@ class HighlightApp extends Component {
           <div>
             <button onClick={(e) => this.setCursor('PEN')}>PEN</button>
             <button onClick={(e) => this.setCursor('ERASER')}>ERASER</button>
+            <button onClick={(e) => this.setCursor('ERASER_ALL')}>ERASER ALL</button>
           </div>
         </div>
       </div>
